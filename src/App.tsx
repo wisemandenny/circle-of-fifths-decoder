@@ -9,6 +9,7 @@ import {
   DECODER_CUTOUT_RADII,
 } from './musicTheory';
 import type { ChordQuality } from './musicTheory';
+import MusicStaff from './MusicStaff';
 import './App.css';
 
 const SEGMENT_ANGLE = 360 / 12;
@@ -457,6 +458,8 @@ export default function App() {
         </div>
         </div>
       </div>
+
+      <MusicStaff keyIndex={keyIndex} preferFlats={preferFlats} />
     </div>
       </main>
     </div>

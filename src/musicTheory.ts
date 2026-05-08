@@ -147,3 +147,37 @@ export const DECODER_WINDOW_RADII: number[] = [132, 132, 132, 132, 132, 72, 132]
 
 // Cutout radius per window: I, IV, V, vi = big (26); ii, iii, vii° = small (21). Order: I, V, ii, vi, iii, vii°, IV.
 export const DECODER_CUTOUT_RADII: number[] = [26, 26, 21, 26, 21, 21, 26];
+
+// --- Key Signature for Staff Display ---
+
+export interface KeySignature {
+  type: 'sharps' | 'flats' | 'none';
+  count: number;
+}
+
+export function getKeySignature(keyIndex: number, preferFlats: boolean): KeySignature {
+  switch (keyIndex) {
+    case 0: return { type: 'none', count: 0 };
+    case 1: return { type: 'sharps', count: 1 };
+    case 2: return { type: 'sharps', count: 2 };
+    case 3: return { type: 'sharps', count: 3 };
+    case 4: return { type: 'sharps', count: 4 };
+    case 5: return { type: 'sharps', count: 5 };
+    case 6: return preferFlats
+      ? { type: 'flats', count: 6 }
+      : { type: 'sharps', count: 6 };
+    case 7: return preferFlats
+      ? { type: 'flats', count: 5 }
+      : { type: 'sharps', count: 7 };
+    case 8: return { type: 'flats', count: 4 };
+    case 9: return { type: 'flats', count: 3 };
+    case 10: return { type: 'flats', count: 2 };
+    case 11: return { type: 'flats', count: 1 };
+    default: return { type: 'none', count: 0 };
+  }
+}
+
+// Staff positions for accidentals in bass clef (0 = bottom line, 8 = top line)
+// Each position unit = half a line spacing (line or space)
+export const BASS_CLEF_SHARP_POSITIONS = [6, 3, 7, 4, 1, 5, 2];
+export const BASS_CLEF_FLAT_POSITIONS = [2, 5, 1, 4, 0, 3, 6];
