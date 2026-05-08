@@ -71,11 +71,26 @@ function spellChordLabel(label: string, preferFlats: boolean): string {
   return mappedRoot + suffix;
 }
 
+function buildChordDisplayName(
+  spelledLabel: string,
+  quality: ChordQuality,
+  chordIndex: number,
+  useSevenths: boolean
+): string {
+  let name = spelledLabel;
+  if (quality === 'dim') name += '°';
+  if (useSevenths) {
+    name += (chordIndex === 0 || chordIndex === 3) ? 'maj7' : '7';
+  }
+  return name;
+}
+
 export default function App() {
   const [rotation, setRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [seventhChordMode, setSeventhChordMode] = useState(false);
   const [preferFlats, setPreferFlats] = useState(true);
+  const [chordProgression, setChordProgression] = useState<{name: string; numeral: string}[]>([]);
   const dragStart = useRef({ x: 0, rotation: 0 });
 
   const keyIndex = getKeyIndexFromRotation(rotation);
@@ -111,6 +126,14 @@ export default function App() {
   const handleKeyClick = (index: number) => {
     setRotation(getRotationFromKeyIndex(index));
   };
+
+  const handleChordClick = useCallback((chordName: string, numeral: string) => {
+    setChordProgression(prev => [...prev, { name: chordName, numeral }]);
+  }, []);
+
+  const handleClearProgression = useCallback(() => {
+    setChordProgression([]);
+  }, []);
 
   return (
     <div className="app-layout">
@@ -155,7 +178,6 @@ export default function App() {
             <li>Major/minor key toggle</li>
             <li>Chord dictionary for each of the displayed chords</li>
             <li>Borrowed chord support</li>
-            <li>Chord progression generator</li>
           </ul>
         </section>
       </aside>
@@ -346,8 +368,21 @@ export default function App() {
                 const dimOffset = cutoutR * 0.9;
                 const badgeXTopRight = x + dimOffset;
                 const badgeYTopRight = y - dimOffset;
+                const fullChordName = buildChordDisplayName(spelledLabel, chord.quality, chordIndexInOrder, seventhChordMode);
                 return (
-                  <g key={i}>
+                  <g
+                    key={i}
+                    className="chord-clickable"
+                    style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                    onClick={() => handleChordClick(fullChordName, romanNumeral)}
+                  >
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={cutoutR}
+                      fill="transparent"
+                      className="chord-hover-bg"
+                    />
                     {showDimBadge && (
                       <g>
                         {/* ° badge drawn first so it appears behind the cutout text */}
@@ -459,7 +494,12 @@ export default function App() {
         </div>
       </div>
 
-      <MusicStaff keyIndex={keyIndex} preferFlats={preferFlats} />
+      <MusicStaff
+        keyIndex={keyIndex}
+        preferFlats={preferFlats}
+        chords={chordProgression}
+        onClear={handleClearProgression}
+      />
     </div>
       </main>
     </div>

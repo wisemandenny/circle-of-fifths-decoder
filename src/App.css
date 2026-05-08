@@ -540,3 +540,48 @@
   color: #2d2a26;
 }
 
+.chord-clickable {
+  transition: filter 0.15s ease;
+}
+
+.chord-hover-bg {
+  transition: fill 0.15s ease;
+}
+
+.chord-clickable:hover .chord-hover-bg {
+  fill: rgba(212, 168, 42, 0.2);
+}
+
+.chord-clickable:active .chord-hover-bg {
+  fill: rgba(212, 168, 42, 0.35);
+}
+
+.music-staff-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+.staff-clear-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.staff-clear-btn:hover {
+  color: #2d2a26;
+  border-color: #999;
+}
+
+.music-staff-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
