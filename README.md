@@ -98,8 +98,15 @@ before continuing.
 
 #### 2. Create the API token
 
-Cloudflare dashboard → **My Profile** → **API Tokens** → **Create Token** →
-**Create Custom Token**. Two permissions are needed:
+This must be a **user** token, not an account-owned one: account-owned tokens
+support only account-scoped permissions, so the `Zone` permission group — and
+therefore `Workers Routes` — is absent from that page entirely (zone support for
+them is still "coming soon"). Account-owned tokens are the ones under *Manage
+Account* → *API Tokens*, and their values begin with `cfat_`.
+
+So: dashboard → avatar menu (top right) → **My Profile** → **API Tokens** →
+**Create Token** → **Create Custom Token**. Each permission row's first dropdown
+selects the group (`Account` / `Zone` / `User`). Two permissions are needed:
 
 | Scope     | Permission     | Access | Why                                     |
 | --------- | -------------- | ------ | --------------------------------------- |
@@ -111,6 +118,17 @@ Then scope the resources down: **Account Resources** → your account, and
 
 Both permissions are required. With only the account one, the script uploads
 and the deploy then fails when it tries to attach the route.
+
+Restricting the token to the single zone is correct, but wrangler will warn
+about it on every deploy:
+
+```
+The current authentication token does not have 'All Zones' permissions.
+Falling back to using the zone-based API endpoint to update each route individually.
+```
+
+That fallback works; the warning is cosmetic and Cloudflare has an open request
+to downgrade it. Do not widen the token to all zones to silence it.
 
 Nothing else is needed for this Worker — no KV, R2, D1, or Workers Tail, since
 it has no bindings. `Account Settings: Read` is also unnecessary because the
