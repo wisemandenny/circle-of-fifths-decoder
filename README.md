@@ -99,13 +99,28 @@ before continuing.
 #### 2. Create the API token
 
 Cloudflare dashboard → **My Profile** → **API Tokens** → **Create Token** →
-**Create Custom Token**:
+**Create Custom Token**. Two permissions are needed:
 
-- **Permissions:** `Account` → `Workers Scripts` → `Edit`
-  (this is the **Edit Cloudflare Workers** template's core permission)
-- **Account Resources:** include your account
-- **Zone Resources:** include `dennywiseman.com` — required because the deploy
-  attaches a route to that zone
+| Scope     | Permission     | Access | Why                                     |
+| --------- | -------------- | ------ | --------------------------------------- |
+| `Account` | Workers Scripts | Edit  | Upload the Worker and its static assets |
+| `Zone`    | Workers Routes  | Edit  | Attach the path route to the zone       |
+
+Then scope the resources down: **Account Resources** → your account, and
+**Zone Resources** → Include → Specific zone → `dennywiseman.com`.
+
+Both permissions are required. With only the account one, the script uploads
+and the deploy then fails when it tries to attach the route.
+
+Nothing else is needed for this Worker — no KV, R2, D1, or Workers Tail, since
+it has no bindings. `Account Settings: Read` is also unnecessary because the
+workflow passes `accountId` explicitly; add it only if wrangler cannot resolve
+the account.
+
+The prebuilt **Edit Cloudflare Workers** template also works and is what
+Cloudflare's CI docs suggest, but it is broader than this project needs
+(Workers KV/R2 Write, Workers Tail Read, Account Settings Read, User Details
+Read, User Memberships Read alongside the two above).
 
 Copy the token; it is shown only once.
 
