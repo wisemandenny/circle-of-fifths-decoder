@@ -142,9 +142,19 @@ Repeat steps 2–5 in the new tool's repo with its own name substituted in
 `wrangler.jsonc` (`name`, `assets.directory` root, route pattern) and its own
 `base` / `outDir` in the build config. Nothing about existing tools changes.
 
-### Note on the pinned wrangler version
+### Notes on the wrangler version
 
 `wrangler` is pinned to exactly `4.101.0`. Versions from `4.102.0` up to at
 least `4.122.0` declare a dependency on `esbuild@0.28.1`, which is not published
 to npm, so they fail to install with `ETARGET`. Retry a newer version once that
 upstream break is resolved.
+
+Two things must stay in step with that pin:
+
+- **Node 22+**, in both the workflow and locally. wrangler 4 declares
+  `engines: { node: '>=22.0.0' }`.
+- **`wranglerVersion` in the workflow.** `wrangler-action` ignores the
+  devDependency and installs its own default (`3.90.0`) unless told otherwise.
+  That version predates assets-only Workers and fails with
+  `Missing entry-point`, since there is deliberately no `main` in
+  `wrangler.jsonc`.
