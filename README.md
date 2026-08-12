@@ -50,22 +50,19 @@ defaults to `html_handling: "auto-trailing-slash"`, which 307-redirects it to
 
 ### One-time Cloudflare setup
 
-Steps 1–2 are shared across all tools on this subdomain and only need doing
-once. Steps 3–6 are per-tool.
-
-#### 1. Get `dennywiseman.com` onto Cloudflare as an active zone
+Step 1 is shared across all tools on this subdomain and only needs doing once.
+Steps 2–5 are per-tool.
 
 A path-scoped route requires an active Cloudflare zone plus a **proxied** DNS
 record for the hostname — routes only fire on traffic Cloudflare proxies.
+`dennywiseman.com` is registered through Cloudflare Registrar, so the zone is
+already active and on Cloudflare's nameservers; no nameserver change is needed:
 
-1. In the Cloudflare dashboard, **Add a domain** → `dennywiseman.com`, and pick
-   a plan (Free is sufficient).
-2. Cloudflare shows two assigned nameservers. Set them at your registrar,
-   replacing the existing ones.
-3. Wait for the zone status to become **Active** (usually minutes to a few
-   hours). Nothing below works until it is.
+```sh
+dig +short NS dennywiseman.com   # → braelyn.ns.cloudflare.com, nitin.ns.cloudflare.com
+```
 
-#### 2. Claim the `musician` subdomain with a landing Worker
+#### 1. Claim the `musician` subdomain with a landing Worker
 
 The subdomain needs a proxied DNS record. A Worker on a **Custom Domain**
 creates that record for you, and gives `/` a real page instead of an error —
@@ -99,7 +96,7 @@ before continuing.
 > Custom Domains do not support wildcard DNS and match the hostname exactly, so
 > this Worker claims `musician.dennywiseman.com` and nothing else.
 
-#### 3. Create the API token
+#### 2. Create the API token
 
 Cloudflare dashboard → **My Profile** → **API Tokens** → **Create Token** →
 **Create Custom Token**:
@@ -112,19 +109,19 @@ Cloudflare dashboard → **My Profile** → **API Tokens** → **Create Token** 
 
 Copy the token; it is shown only once.
 
-#### 4. Find the account ID
+#### 3. Find the account ID
 
 Cloudflare dashboard → **Workers & Pages** → the account ID is in the right-hand
 sidebar (also in the URL after `/dash.cloudflare.com/`).
 
-#### 5. Add the repo secrets
+#### 4. Add the repo secrets
 
 ```sh
-gh secret set CLOUDFLARE_API_TOKEN   # paste the token from step 3
-gh secret set CLOUDFLARE_ACCOUNT_ID  # paste the ID from step 4
+gh secret set CLOUDFLARE_API_TOKEN   # paste the token from step 2
+gh secret set CLOUDFLARE_ACCOUNT_ID  # paste the ID from step 3
 ```
 
-#### 6. Deploy
+#### 5. Deploy
 
 ```sh
 git push          # or: gh workflow run deploy.yml
@@ -141,7 +138,7 @@ npm run build && npx wrangler deploy
 
 ### Adding another tool later
 
-Repeat steps 3–6 in the new tool's repo with its own name substituted in
+Repeat steps 2–5 in the new tool's repo with its own name substituted in
 `wrangler.jsonc` (`name`, `assets.directory` root, route pattern) and its own
 `base` / `outDir` in the build config. Nothing about existing tools changes.
 
