@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy
 
 on:
   push:
@@ -10,12 +10,13 @@ permissions:
 
 # Only one deploy at a time; don't cancel an in-progress run
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,6 +29,3 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # dist/ is the site root; the app itself lives in
-          # dist/circle-of-fifths-decoder/ so it is served at that path.
-          command: pages deploy dist --project-name=circle-of-fifths-decoder --branch=main

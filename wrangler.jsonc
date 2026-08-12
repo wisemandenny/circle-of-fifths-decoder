@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "circle-of-fifths-decoder",
+  "compatibility_date": "2026-08-12",
+
+  // No Worker script: this is a static-assets-only Worker. `dist` is the
+  // served root, and the build nests the app under a matching subdirectory
+  // so its files line up with the route's path prefix below.
+  "assets": {
+    "directory": "./dist"
+  },
+
+  // Path-scoped route, so other tools can own other prefixes on the same
+  // hostname. A single trailing `*` (rather than `/*`) is deliberate: it
+  // matches both `/circle-of-fifths-decoder` and `/circle-of-fifths-decoder/…`,
+  // and sidesteps the documented `/foo/*` vs `/foo*` specificity bug.
+  // Consequence: tool names must not be prefixes of one another.
+  "routes": [
+    {
+      "pattern": "musician.dennywiseman.com/circle-of-fifths-decoder*",
+      "zone_name": "dennywiseman.com"
+    }
+  ],
+
+  // The tool is reached through the route above, not a workers.dev subdomain.
+  "workers_dev": false
+}
